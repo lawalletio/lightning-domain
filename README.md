@@ -1,6 +1,8 @@
-# Identity Provider
+# Lightning Domain
 
+Provide Lightning Addreses with your domain.
 Provides NIP-05 and LUD-16 for users.
+
 Just deploy it and assign your domain.
 
 ## Our stack
@@ -14,14 +16,14 @@ You can check the full documentation in [LaWallet Documentation](https://lawalle
 
 ## One Click install
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flawalletio%2Fidentity-provider&env=LAWALLET_API_DOMAIN,NOSTR_NONCE_ADMIN_PUBLIC_KEY&project-name=your-domain&repository-name=your-domain)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flawalletio%2Flightning-domain&env=LAWALLET_API_DOMAIN,NOSTR_NONCE_ADMIN_PUBLIC_KEY&project-name=lightning-domain&repository-name=lightning-domain&integration-ids=oac_3sK3gnG06emjIEVL09jjntDD)
 
 1. Select a name for your repo
 2. Set the environment variables
 
    ```bash
    LAWALLET_API_DOMAIN="https://api.lawallet.ar"
-   NOSTR_NONCE_ADMIN_PUBLIC_KEY="46241efb55cbfc73d410a136fac1cf88ddb6778014b8a58cecd0df8b01a98ffc"
+   AUTOCREATE_NONCE="SECRET_NONCE" # < Remember this value
    ```
 
 3. Deploy
