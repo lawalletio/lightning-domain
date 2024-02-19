@@ -1,9 +1,9 @@
 {
-  "name": "identity-provider",
+  "name": "lightning-domain",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "prisma migrate dev && next build",
     "dev": "next dev -p 8000",
     "postinstall": "prisma generate",
     "lint": "next lint",
