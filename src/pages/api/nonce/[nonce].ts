@@ -13,6 +13,12 @@ export default async function handler(
     return;
   }
 
+  // Return true if its the autocreate nonce
+  if (process.env.AUTOCREATE_NONCE && process.env.AUTOCREATE_NONCE === nonce) {
+    res.status(200).send({ status: true });
+    return;
+  }
+
   // Find identity record by name
   const nonceRecord = await prisma.nonce.findUnique({
     where: {
