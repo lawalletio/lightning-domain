@@ -32,5 +32,6 @@ export default async function handler(
     status: "OK",
     username: identityRecord.name,
     federationId: "lawallet.ar",
+    nodeAlias: "lacrypta-villanueva",
   });
 }
