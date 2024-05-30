@@ -30,23 +30,26 @@ export default async function handler(
     validateSchema(event as NostrEvent);
     if (event.tagValue("t") !== "create-nonce")
       throw new Error("Only create-nonce subkind is allowed");
+
+    // Authorization
+    if (event.pubkey !== adminKey!) {
+      res.status(403).json({ event, reason: "Pubkey not authorized" });
+      return;
+    }
+
+    const eventNonce: string | undefined = event.tagValue("nonce");
+    const entropy: string = eventNonce ?? randomBytes(32).toString("hex");
+
+    // Create nonce
+    const createdNonce = await prisma.nonce.create({
+      data: {
+        nonce: entropy,
+      },
+    });
+
+    res.status(200).json({ nonce: createdNonce.nonce });
   } catch (e: unknown) {
     res.status(422).json({ reason: (e as Error).message });
     return;
   }
-
-  // Authorization
-  if (event.pubkey !== adminKey!) {
-    res.status(403).json({ event, reason: "Pubkey not authorized" });
-    return;
-  }
-
-  // Create nonce
-  const createdNonce = await prisma.nonce.create({
-    data: {
-      nonce: randomBytes(32).toString("hex"),
-    },
-  });
-
-  res.status(200).json({ nonce: createdNonce.nonce });
 }

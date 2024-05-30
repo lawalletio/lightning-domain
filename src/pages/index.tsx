@@ -26,7 +26,7 @@ export default function Home() {
                 <LaCryptaLogo />
               </h3>
               <div className="text-lg">
-                Conocé quienes esta detras de todo esto
+                Conocé quiénes están detrás de todo esto.
               </div>
             </Link>
             <Link
