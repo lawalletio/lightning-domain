@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext", "WebWorker"],
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
@@ -13,8 +9,8 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -33,7 +29,7 @@
     ]
   },
   "include": [
-    ".eslintrc.cjs",
+    ".eslintrc.json",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

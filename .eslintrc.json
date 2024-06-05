@@ -8,9 +8,7 @@
   "extends": [
     "plugin:react/recommended",
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "plugin:@next/next/recommended"
+    "plugin:prettier/recommended"
   ],
   "settings": {
     "react": { "version": "detect" }
@@ -35,9 +33,6 @@
     "react/prop-types": "off",
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": "off",
-    "react/react-in-jsx-scope": "off",
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-unused-vars": "warn",
-    "@next/next/no-img-element": "warn"
+    "react/react-in-jsx-scope": "off"
   }
 }
