@@ -2,6 +2,14 @@ import { type NostrEvent } from "@nostr-dev-kit/ndk";
 const urlxEndpoint =
   process.env.LAWALLET_API_DOMAIN ?? "https://api.lawallet.ar";
 
+export function requiredEnvVar(key: string): string {
+  const envVar = process.env[key];
+  if (undefined === envVar) {
+    throw new Error(`Environment process ${key} must be defined`);
+  }
+  return envVar;
+}
+
 export function validateSchema(event: NostrEvent): boolean {
   if (1112 !== event.kind!) {
     throw new Error(`Invalid kind ${event.kind!} for event ${event.id!}`);
