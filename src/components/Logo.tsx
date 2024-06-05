@@ -1,11 +1,6 @@
 export const Logo = () => {
   return (
-    <svg
-      width={"100%"}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 1044.89 187.49"
-      fill="#000"
-    >
+    <svg width={'100%'} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1044.89 187.49" fill="#000">
       <defs>
         <linearGradient
           id="linear-gradient"
