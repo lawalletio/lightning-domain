@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     if (!event.tags.find((t) => t[0] === 'delegation')) throw new Error('Must delegate identity-transfer subkind');
     if (event.pubkey !== NOSTR_CARD_PUBLIC_KEY) throw new Error('Only the card module can transfer identities');
   } catch (e: unknown) {
-    return NextResponse.json({ data: { reason: (e as Error).message } }, { status: 422 });
+    return NextResponse.json({ reason: (e as Error).message }, { status: 422 });
   }
 
   try {
@@ -43,10 +43,10 @@ export async function POST(request: Request) {
         },
       });
 
-      return NextResponse.json({ data: { name: newIdentity.name, pubkey: newIdentity.pubkey } }, { status: 200 });
+      return NextResponse.json({ name: newIdentity.name, pubkey: newIdentity.pubkey }, { status: 200 });
     });
   } catch (error: unknown) {
     const message = (error as Error).message;
-    return NextResponse.json({ data: { error: message } }, { status: 400 });
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

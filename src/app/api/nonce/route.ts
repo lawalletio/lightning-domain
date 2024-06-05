@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
     // Authorization
     if (event.pubkey !== NOSTR_NONCE_ADMIN_PUBLIC_KEY)
-      return NextResponse.json({ data: { event, reason: 'Pubkey not authorized' } }, { status: 403 });
+      return NextResponse.json({ event, reason: 'Pubkey not authorized' }, { status: 403 });
 
     const eventNonce: string | undefined = event.tagValue('nonce');
     const entropy: string = eventNonce ?? randomBytes(32).toString('hex');
@@ -33,8 +33,8 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ data: { nonce: createdNonce.nonce } }, { status: 200 });
+    return NextResponse.json({ nonce: createdNonce.nonce }, { status: 200 });
   } catch (e: unknown) {
-    return NextResponse.json({ data: { reason: (e as Error).message } }, { status: 422 });
+    return NextResponse.json({ reason: (e as Error).message }, { status: 422 });
   }
 }

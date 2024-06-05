@@ -20,7 +20,7 @@ async function createIdentity(request: Request) {
     if (event.tags.find((t) => t[0] === 't')![1] !== 'create-identity')
       throw new Error('Only create-identity subkind is allowed');
   } catch (e: unknown) {
-    return NextResponse.json({ data: { reason: (e as Error).message } }, { status: 422 });
+    return NextResponse.json({ reason: (e as Error).message }, { status: 422 });
   }
 
   try {
@@ -35,12 +35,11 @@ async function createIdentity(request: Request) {
       if (!name) throw new Error('You need to set a name tag');
       if (!nonce) throw new Error('Nonce not found');
     } catch (e: unknown) {
-      return NextResponse.json({ data: { reason: (e as Error).message } }, { status: 422 });
+      return NextResponse.json({ reason: (e as Error).message }, { status: 422 });
     }
 
     // Validate reserved names
-    if (reserved.find((r) => r === name))
-      return NextResponse.json({ data: { reason: 'Name is reserved' } }, { status: 403 });
+    if (reserved.find((r) => r === name)) return NextResponse.json({ reason: 'Name is reserved' }, { status: 403 });
 
     // For debugging
     if (AUTOCREATE_NONCE && AUTOCREATE_NONCE === nonce) {
@@ -110,10 +109,10 @@ async function createIdentity(request: Request) {
       console.error(e);
     }
 
-    return NextResponse.json({ data: { pubkey: event.pubkey } }, { status: 200 });
+    return NextResponse.json({ pubkey: event.pubkey }, { status: 200 });
   } catch (error: unknown) {
     const message = (error as Error).message;
-    return NextResponse.json({ data: { error: message } }, { status: 400 });
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
 
