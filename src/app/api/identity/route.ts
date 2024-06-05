@@ -138,10 +138,8 @@ async function getIdentity(request: NextRequest) {
   // Respond NIP-05
   return NextResponse.json(
     {
-      data: {
-        names: {
-          [name]: identityRecord.pubkey,
-        },
+      names: {
+        [name]: identityRecord.pubkey,
       },
     },
     { status: 200 },
