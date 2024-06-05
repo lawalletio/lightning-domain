@@ -1,15 +1,12 @@
-import "~/styles/globals.css";
+import React from 'react';
+import '~/styles/globals.css';
 
 export const metadata = {
   title: 'LaWallet.ar',
   description: 'Identity Provider - LaWallet',
-}
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
       <head>
@@ -17,5 +14,5 @@ export default function RootLayout({
       </head>
       <body>{children}</body>
     </html>
-  )
+  );
 }

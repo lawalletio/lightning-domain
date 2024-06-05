@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
 
 export interface IContent {
   from: string;
@@ -29,10 +29,10 @@ export async function sendEmergencyEmail(content: IContent) {
   // Send the email
   try {
     const info = await transporter.sendMail(content);
-    console.log("Message sent: %s", info.messageId);
+    console.log('Message sent: %s', info.messageId);
     return true;
   } catch (error) {
-    console.error("Error sending email: ", error);
+    console.error('Error sending email: ', error);
     return false;
   }
 }
