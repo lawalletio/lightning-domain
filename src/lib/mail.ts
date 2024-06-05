@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { SMTP_HOST, SMTP_PASSWORD, SMTP_USERNAME } from '~/constants/constants';
 
 export interface IContent {
   from: string;
@@ -7,11 +8,6 @@ export interface IContent {
   text: string;
   html: string;
 }
-
-const SMTP_HOST = process.env.SMTP_HOST;
-const SMTP_USERNAME = process.env.SMTP_USERNAME;
-const SMTP_PASSWORD = process.env.SMTP_PASSWORD;
-
 export async function sendEmergencyEmail(content: IContent) {
   // Create a transporter object
   const transporter = nodemailer.createTransport({

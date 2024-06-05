@@ -8,19 +8,16 @@ import type { Voucher } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IContent, sendEmergencyEmail } from '~/lib/mail';
 import { NextResponse } from 'next/server';
+import { SENGRID_API_KEY, VOUCHER_VERIFICATION_CODE_LENGTH } from '~/constants/constants';
 
 const verificationCodeData: { subject: string; html: string } = verificationCodeEmail as {
   subject: string;
   html: string;
 };
 
-const verificationCodeLength = parseInt(process.env.VOUCHER_VERIFICATION_CODE_LENGTH ?? '8');
-
-const sendgridApiKey: string = process.env.SENDGRID_API_KEY ?? '';
-
 const U_CONSTRAINT_VIOLATION = 'P2002';
 
-SG.setApiKey(sendgridApiKey);
+SG.setApiKey(SENGRID_API_KEY);
 
 type VoucherRequest = { name: string; email: string };
 
@@ -47,7 +44,7 @@ function cleanupEmail(email: string): { cleanUser: string; cleanDomain: string; 
 }
 
 function replaceValidationCode(text: string, code: number): string {
-  return text.replace('%VERIFICATION_CODE%', code.toString().padStart(verificationCodeLength, '0'));
+  return text.replace('%VERIFICATION_CODE%', code.toString().padStart(VOUCHER_VERIFICATION_CODE_LENGTH, '0'));
 }
 
 export async function POST(request: Request) {
@@ -70,7 +67,10 @@ export async function POST(request: Request) {
       if (email.cleanDomain in blacklistedDomains) throw new Error('Invalid domain');
 
       const cleanEmail = `${email.cleanUser}@${email.cleanDomain}`;
-      const verificationCode = randomInt(10 ** (verificationCodeLength - 1), 10 ** verificationCodeLength - 1);
+      const verificationCode = randomInt(
+        10 ** (VOUCHER_VERIFICATION_CODE_LENGTH - 1),
+        10 ** VOUCHER_VERIFICATION_CODE_LENGTH - 1,
+      );
 
       const existingVoucher: Voucher | null =
         null !== identity.voucherId ? await tx.voucher.findUnique({ where: { id: identity.voucherId } }) : null;

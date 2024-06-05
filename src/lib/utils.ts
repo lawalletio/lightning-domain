@@ -1,5 +1,5 @@
 import { type NostrEvent } from '@nostr-dev-kit/ndk';
-const urlxEndpoint = process.env.LAWALLET_API_DOMAIN ?? 'https://api.lawallet.ar';
+import { LAWALLET_API_DOMAIN } from '~/constants/constants';
 
 export function requiredEnvVar(key: string): string {
   const envVar = process.env[key];
@@ -34,7 +34,7 @@ export function generateLUD06(pubkey: string) {
     status: 'OK',
     tag: 'payRequest',
     commentAllowed: 255,
-    callback: `${urlxEndpoint}/lnurlp/${pubkey}/callback`,
+    callback: `${LAWALLET_API_DOMAIN}/lnurlp/${pubkey}/callback`,
     metadata: '[["text/plain", "lawallet"]]',
     minSendable: 1000,
     maxSendable: 10000000000,

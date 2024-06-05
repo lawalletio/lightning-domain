@@ -1,9 +1,5 @@
 import { finishEvent, type EventTemplate } from 'nostr-tools';
-
-const NOSTR_LEDGER_PUBLIC_KEY = process.env.NOSTR_LEDGER_PUBLIC_KEY!;
-const LAWALLET_API_DOMAIN = process.env.LAWALLET_API_DOMAIN!;
-const VOUCHER_AMOUNT = parseInt(process.env.VOUCHER_AMOUNT ?? '1000');
-const VOUCHER_TOKEN = process.env.VOUCHER_TOKEN ?? 'BTC';
+import { LAWALLET_API_DOMAIN, NOSTR_LEDGER_PUBLIC_KEY, VOUCHER_AMOUNT, VOUCHER_TOKEN } from '~/constants/constants';
 
 export function generateIdentityEvent(name: string, pubkey: string): EventTemplate {
   return {

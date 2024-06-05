@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
+import { VOUCHER_PRIVATE_KEY } from '~/constants/constants';
 import { generateVoucherEvent, publishEvent } from '~/lib/events';
 import { prisma } from '~/server/db';
 
-const voucherPrivateKey: string = process.env.NOSTR_VOUCHER_PRIVATE_KEY ?? '';
 type VoucherClaim = { name: string; code: number };
 
 export async function POST(request: Request) {
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       }
 
       try {
-        await publishEvent(generateVoucherEvent(identity.pubkey), voucherPrivateKey);
+        await publishEvent(generateVoucherEvent(identity.pubkey), VOUCHER_PRIVATE_KEY);
       } catch (e) {
         throw new Error('Failed to broadcast transaction');
       }
