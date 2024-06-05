@@ -22,12 +22,10 @@ export async function GET(request: NextRequest, { params }: { params: { pubkey: 
   // Respond LUD06
   return NextResponse.json(
     {
-      data: {
-        status: 'OK',
-        username: identityRecord.name,
-        federationId: 'lawallet.ar',
-        nodeAlias: 'lacrypta-villanueva',
-      },
+      status: 'OK',
+      username: identityRecord.name,
+      federationId: 'lawallet.ar',
+      nodeAlias: 'lacrypta-villanueva',
     },
     { status: 200 },
   );

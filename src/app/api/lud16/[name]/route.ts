@@ -21,5 +21,5 @@ export async function GET(request: NextRequest, { params }: { params: { name: st
   if (!identityRecord) return NextResponse.json({ data: 'Not found' }, { status: 404 });
 
   // Respond LUD06
-  return NextResponse.json({ data: generateLUD06(name) }, { status: 200 });
+  return NextResponse.json({ ...generateLUD06(name) }, { status: 200 });
 }
