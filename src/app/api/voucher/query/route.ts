@@ -4,11 +4,13 @@ import { prisma } from '~/server/db';
 
 import { NextResponse } from 'next/server';
 
-enum Voucher_Status {
-  NONE = 'NONE',
-  REQUESTED = 'REQUESTED',
-  CLAIMED = 'CLAIMED',
-}
+// export enum Voucher_Status {
+//   NONE = 'NONE',
+//   REQUESTED = 'REQUESTED',
+//   CLAIMED = 'CLAIMED',
+// }
+
+type VoucherStatusTypes = 'NONE' | 'CLAIMED' | 'REQUESTED';
 
 export async function POST(request: Request) {
   const event: Event = (await request.json()) as unknown as Event;
@@ -30,9 +32,9 @@ export async function POST(request: Request) {
       where: { Identity: { pubkey: event.pubkey } },
     });
 
-    let status: Voucher_Status = Voucher_Status.NONE;
+    let status: VoucherStatusTypes = 'NONE';
     if (null !== voucher) {
-      status = voucher.claimed ? Voucher_Status.CLAIMED : Voucher_Status.REQUESTED;
+      status = voucher.claimed ? 'CLAIMED' : 'REQUESTED';
     }
 
     return NextResponse.json({ status }, { status: 200 });
