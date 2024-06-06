@@ -1,8 +1,5 @@
 import { requiredEnvVar } from './utils';
 
-export const signupReceiver: string = '6aee4c2218052d665c07622a2beff87df017dfef351267cc8db17471fbb18a64'; //tesoro@lawallet.ar
-export const msats_signupPrice: number = 21000;
-
 // Required
 export const ADMIN_PUBLISHER_PRIVATE_KEY: string = requiredEnvVar('NOSTR_IDENTITY_PUBLISHER_PRIVATE_KEY');
 export const NOSTR_NONCE_ADMIN_PRIVATE_KEY: string = requiredEnvVar('NOSTR_NONCE_ADMIN_PRIVATE_KEY');

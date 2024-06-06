@@ -4,7 +4,8 @@ import NDK, { NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/ndk';
 import { randomBytes } from 'crypto';
 import { NextResponse } from 'next/server';
 import { getPublicKey, nip04, nip19 } from 'nostr-tools';
-import { NOSTR_NONCE_ADMIN_PRIVATE_KEY, msats_signupPrice, signupReceiver } from '~/lib/envs';
+import { signUpInfo } from '~/lib/constants';
+import { NOSTR_NONCE_ADMIN_PRIVATE_KEY } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { initializeNDK, signNdk } from '~/lib/utils';
 
@@ -29,13 +30,15 @@ export async function GET() {
     /* Zap Request Event */
     const zapRequestEvent: NostrEvent | undefined = await signNdk(
       ndk,
-      buildZapRequestEvent(adminPubkey, signupReceiver, msats_signupPrice, federationConfig, [['e', buyReqEvent.id!]]),
+      buildZapRequestEvent(adminPubkey, signUpInfo.receiver, signUpInfo.price, federationConfig, [
+        ['e', buyReqEvent.id!],
+      ]),
     );
 
     const zapRequestURI: string = encodeURI(JSON.stringify(zapRequestEvent));
 
     const bolt11 = await requestInvoice(
-      `${federationConfig.endpoints.gateway}/lnurlp/${nip19.npubEncode(signupReceiver)}/callback?amount=${msats_signupPrice}&nostr=${zapRequestURI}`,
+      `${federationConfig.endpoints.gateway}/lnurlp/${nip19.npubEncode(signUpInfo.receiver)}/callback?amount=${signUpInfo.price}&nostr=${zapRequestURI}`,
     );
 
     return NextResponse.json({ zapRequest: JSON.stringify(zapRequestEvent), invoice: bolt11 }, { status: 200 });

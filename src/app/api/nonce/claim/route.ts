@@ -3,7 +3,8 @@ import { DecodedInvoiceReturns } from '@lawallet/utils/types';
 import NDK, { NDKEvent, NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/ndk';
 import { NextResponse } from 'next/server';
 import { Event, getPublicKey, nip04, validateEvent, verifySignature } from 'nostr-tools';
-import { NOSTR_NONCE_ADMIN_PRIVATE_KEY, msats_signupPrice } from '~/lib/envs';
+import { signUpInfo } from '~/lib/constants';
+import { NOSTR_NONCE_ADMIN_PRIVATE_KEY } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { GenerateNonceReturns, generateNonce, initializeNDK } from '~/lib/utils';
 
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     const decodedInvoice: DecodedInvoiceReturns | undefined = decodeInvoice(payedInvoice);
 
     if (!validateEvent(zapReceipt) || !buyRequestId || !decodedInvoice) throw new Error('Malformed event');
-    if (Number(decodedInvoice.millisatoshis) !== msats_signupPrice) throw new Error('Insufficient payment');
+    if (Number(decodedInvoice.millisatoshis) !== signUpInfo.price) throw new Error('Insufficient payment');
 
     const ndk: NDK = await initializeNDK(
       federationConfig.relaysList,
