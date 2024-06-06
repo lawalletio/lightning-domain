@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { Event, nip26, validateEvent, verifySignature } from 'nostr-tools';
-import { NOSTR_CARD_PUBLIC_KEY } from '~/lib/envs';
 import { validateSchema } from '~/lib/utils';
 import { prisma } from '~/server/db';
 import type { Identity } from '@prisma/client';
+import { federationConfig } from '~/lib/federation';
 
 export async function POST(request: Request) {
   const event: Event = (await request.json()) as unknown as Event;
@@ -17,7 +17,8 @@ export async function POST(request: Request) {
     if (event.tags.find((t) => t[0] === 't')![1] !== 'identity-transfer')
       throw new Error('Only identity-transfer subkind is allowed');
     if (!event.tags.find((t) => t[0] === 'delegation')) throw new Error('Must delegate identity-transfer subkind');
-    if (event.pubkey !== NOSTR_CARD_PUBLIC_KEY) throw new Error('Only the card module can transfer identities');
+    if (event.pubkey !== federationConfig.modulePubkeys.card)
+      throw new Error('Only the card module can transfer identities');
   } catch (e: unknown) {
     return NextResponse.json({ reason: (e as Error).message }, { status: 422 });
   }

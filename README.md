@@ -22,6 +22,8 @@ You can check the full documentation in [LaWallet Documentation](https://backend
 2. Set the environment variables
 
    ```bash
+   DATABASE_URL="postgresql://" # < Database URI
+   ADMIN_PUBLISHER_PRIVATE_KEY="" # < Nostr Admin Private Key
    AUTOCREATE_NONCE="SECRET_NONCE" # < Remember this value
    ```
 

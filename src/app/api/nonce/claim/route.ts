@@ -4,15 +4,15 @@ import NDK, { NDKEvent, NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/n
 import { NextResponse } from 'next/server';
 import { Event, getPublicKey, nip04, validateEvent, verifySignature } from 'nostr-tools';
 import { signUpInfo } from '~/lib/constants';
-import { NOSTR_NONCE_ADMIN_PRIVATE_KEY } from '~/lib/envs';
+import { ADMIN_PUBLISHER_PRIVATE_KEY } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { GenerateNonceReturns, generateNonce, initializeNDK } from '~/lib/utils';
 
 export async function POST(request: Request) {
-  if (!NOSTR_NONCE_ADMIN_PRIVATE_KEY.length) return NextResponse.json({ data: 'Missing admin key' }, { status: 401 });
+  if (!ADMIN_PUBLISHER_PRIVATE_KEY.length) return NextResponse.json({ data: 'Missing admin key' }, { status: 401 });
 
   try {
-    const adminPubkey: string = getPublicKey(NOSTR_NONCE_ADMIN_PRIVATE_KEY);
+    const adminPubkey: string = getPublicKey(ADMIN_PUBLISHER_PRIVATE_KEY);
 
     const zapReceipt: NostrEvent = await request.json();
     if (!zapReceipt) return NextResponse.json({ data: 'Missing zap receipt event' }, { status: 401 });
@@ -37,14 +37,14 @@ export async function POST(request: Request) {
 
     const ndk: NDK = await initializeNDK(
       federationConfig.relaysList,
-      new NDKPrivateKeySigner(NOSTR_NONCE_ADMIN_PRIVATE_KEY),
+      new NDKPrivateKeySigner(ADMIN_PUBLISHER_PRIVATE_KEY),
     );
 
     const buyRequestEvent: NDKEvent | null = await ndk.fetchEvent({ ids: [buyRequestId], authors: [adminPubkey] });
     if (!buyRequestEvent) throw new Error('Invalid buy request event');
 
     const decryptedNonce: string = await nip04.decrypt(
-      NOSTR_NONCE_ADMIN_PRIVATE_KEY,
+      ADMIN_PUBLISHER_PRIVATE_KEY,
       adminPubkey,
       buyRequestEvent.content,
     );
