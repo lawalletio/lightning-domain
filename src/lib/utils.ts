@@ -1,5 +1,27 @@
-import { type NostrEvent } from '@nostr-dev-kit/ndk';
-import { LAWALLET_API_DOMAIN } from '~/lib/envs';
+import NDK, { NDKEvent, NDKSigner, type NostrEvent } from '@nostr-dev-kit/ndk';
+import { federationConfig } from './federation';
+import { Event, validateEvent, verifySignature } from 'nostr-tools';
+import { randomBytes } from 'crypto';
+import { prisma } from '~/server/db';
+
+export const initializeNDK = async (relays: string[], signer: NDKSigner) => {
+  const ndkProvider = new NDK({
+    explicitRelayUrls: relays,
+    signer,
+  });
+
+  await ndkProvider.connect();
+  return ndkProvider;
+};
+
+export const signNdk = async (ndk: NDK, eventInfo: NostrEvent, publish: boolean = false) => {
+  const event: NDKEvent = new NDKEvent(ndk, eventInfo);
+
+  await event.sign();
+  if (publish) await event.publish();
+
+  return event.toNostrEvent();
+};
 
 export function requiredEnvVar(key: string): string {
   const envVar = process.env[key];
@@ -34,7 +56,7 @@ export function generateLUD06(pubkey: string) {
     status: 'OK',
     tag: 'payRequest',
     commentAllowed: 255,
-    callback: `${LAWALLET_API_DOMAIN}/lnurlp/${pubkey}/callback`,
+    callback: `${federationConfig.endpoints.gateway}/lnurlp/${pubkey}/callback`,
     metadata: '[["text/plain", "lawallet"]]',
     minSendable: 1000,
     maxSendable: 10000000000,
@@ -48,4 +70,39 @@ export function generateLUD06(pubkey: string) {
     federationId: 'lawallet.ar',
     accountPubKey: pubkey,
   };
+}
+
+export type GenerateNonceReturns = {
+  success: boolean;
+  status: 200 | 403 | 422;
+  message: string;
+};
+
+export async function generateNonce(event: NDKEvent, adminPubkey: string): Promise<GenerateNonceReturns> {
+  // Validate event
+  try {
+    if (!validateEvent(event)) return { success: false, status: 422, message: 'Malformed event' };
+    if (!verifySignature(event as Event)) return { success: false, status: 422, message: 'Invalid signature' };
+
+    validateSchema(event as NostrEvent);
+    if (event.tagValue('t') !== 'create-nonce')
+      return { success: false, status: 422, message: 'Only create-nonce subkind is allowed' };
+
+    // Authorization
+    if (event.pubkey !== adminPubkey) return { success: false, status: 403, message: 'Pubkey not authorized' };
+
+    const eventNonce: string | undefined = event.tagValue('nonce');
+    const entropy: string = eventNonce ?? randomBytes(32).toString('hex');
+
+    // Create nonce
+    const createdNonce = await prisma.nonce.create({
+      data: {
+        nonce: entropy,
+      },
+    });
+
+    return { success: true, status: 200, message: createdNonce.nonce };
+  } catch (e: unknown) {
+    return { success: false, status: 422, message: (e as Error).message };
+  }
 }

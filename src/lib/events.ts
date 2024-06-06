@@ -1,5 +1,5 @@
 import { finishEvent, type EventTemplate } from 'nostr-tools';
-import { LAWALLET_API_DOMAIN, VOUCHER_AMOUNT, VOUCHER_TOKEN } from '~/lib/envs';
+import { VOUCHER_AMOUNT, VOUCHER_TOKEN } from '~/lib/envs';
 import { federationConfig } from './federation';
 
 export function generateIdentityEvent(name: string, pubkey: string): EventTemplate {
@@ -33,7 +33,7 @@ export function generateVoucherEvent(to: string): EventTemplate {
 }
 
 export async function publishEvent(event: EventTemplate, privateKey: string): Promise<void> {
-  const url = `${LAWALLET_API_DOMAIN}/nostr/publish`;
+  const url = `${federationConfig.endpoints.gateway}/nostr/publish`;
 
   const signedEvent = finishEvent(event, privateKey);
   // Fetch request options
