@@ -4,7 +4,7 @@ import NDK, { NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/ndk';
 import { randomBytes } from 'crypto';
 import { NextResponse } from 'next/server';
 import { getPublicKey, nip04, nip19 } from 'nostr-tools';
-import { signUpInfo } from '~/lib/constants';
+import { signUpInfo } from '~/lib/signup';
 import { ADMIN_PUBLISHER_PRIVATE_KEY } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { initializeNDK, signNdk } from '~/lib/utils';

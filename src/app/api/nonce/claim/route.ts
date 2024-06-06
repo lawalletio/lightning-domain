@@ -3,7 +3,7 @@ import { DecodedInvoiceReturns } from '@lawallet/utils/types';
 import NDK, { NDKEvent, NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/ndk';
 import { NextResponse } from 'next/server';
 import { Event, getPublicKey, nip04, validateEvent, verifySignature } from 'nostr-tools';
-import { signUpInfo } from '~/lib/constants';
+import { signUpInfo } from '~/lib/signup';
 import { ADMIN_PUBLISHER_PRIVATE_KEY } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { GenerateNonceReturns, generateNonce, initializeNDK } from '~/lib/utils';
