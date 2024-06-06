@@ -8,6 +8,7 @@ Just deploy it and assign your domain.
 ## Our stack
 
 - [Prisma](https://prisma.io)
+- [Tailwind CSS](https://tailwindcss.com)
 - [NextJS](https://nextjs.org)
 
 ## Documentation
@@ -16,7 +17,7 @@ You can check the full documentation in [LaWallet Documentation](https://backend
 
 ## One Click install
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flawalletio%2Flightning-domain&env=AUTOCREATE_NONCE&project-name=lightning-domain&repository-name=lightning-domain&integration-ids=oac_3sK3gnG06emjIEVL09jjntDD)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flawalletio%2Flightning-domain&env=ADMIN_PUBLISHER_PRIVATE_KEY,AUTOCREATE_NONCE&project-name=lightning-domain&repository-name=lightning-domain&integration-ids=oac_3sK3gnG06emjIEVL09jjntDD)
 
 1. Select a name for your repo
 2. Set the environment variables
