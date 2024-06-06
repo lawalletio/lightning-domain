@@ -1,12 +1,14 @@
-import { validateEvent, verifySignature, type Event } from 'nostr-tools';
+import { getPublicKey, validateEvent, verifySignature, type Event } from 'nostr-tools';
 import { validateSchema } from '~/lib/utils';
 
 import { prisma } from '~/server/db';
 
 import { NDKEvent, type NostrEvent } from '@nostr-dev-kit/ndk';
 import { randomBytes } from 'crypto';
-import { NOSTR_NONCE_ADMIN_PUBLIC_KEY } from '~/constants/constants';
+import { NOSTR_NONCE_ADMIN_PRIVATE_KEY } from '~/lib/envs';
 import { NextResponse } from 'next/server';
+
+const adminPubkey: string = getPublicKey(NOSTR_NONCE_ADMIN_PRIVATE_KEY);
 
 export async function POST(request: Request) {
   const event: NDKEvent = new NDKEvent(undefined, (await request.json()) as unknown as NostrEvent);
@@ -20,7 +22,7 @@ export async function POST(request: Request) {
     if (event.tagValue('t') !== 'create-nonce') throw new Error('Only create-nonce subkind is allowed');
 
     // Authorization
-    if (event.pubkey !== NOSTR_NONCE_ADMIN_PUBLIC_KEY)
+    if (event.pubkey !== adminPubkey)
       return NextResponse.json({ event, reason: 'Pubkey not authorized' }, { status: 403 });
 
     const eventNonce: string | undefined = event.tagValue('nonce');

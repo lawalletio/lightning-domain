@@ -1,16 +1,13 @@
-import { requiredEnvVar } from '~/lib/utils';
-
-const LAWALLET_LEDGER_PUBKEY: string = 'bd9b0b60d5cd2a9df282fc504e88334995e6fac8b148fa89e0f8c09e2a570a84';
+import { requiredEnvVar } from './utils';
 
 // Required
 export const ADMIN_PUBLISHER_PRIVATE_KEY: string = requiredEnvVar('NOSTR_IDENTITY_PUBLISHER_PRIVATE_KEY');
+export const NOSTR_NONCE_ADMIN_PRIVATE_KEY: string = requiredEnvVar('NOSTR_NONCE_ADMIN_PRIVATE_KEY');
 export const NOSTR_CARD_PUBLIC_KEY: string = requiredEnvVar('NOSTR_CARD_PUBLIC_KEY');
-export const NOSTR_NONCE_ADMIN_PUBLIC_KEY: string = requiredEnvVar('NOSTR_NONCE_ADMIN_PUBLIC_KEY');
 
 // Autocompleted
 export const AUTOCREATE_NONCE: string = process.env.AUTOCREATE_NONCE ?? '';
 export const LAWALLET_API_DOMAIN: string = process.env.LAWALLET_API_DOMAIN ?? 'https://api.lawallet.ar';
-export const NOSTR_LEDGER_PUBLIC_KEY = process.env.NOSTR_LEDGER_PUBLIC_KEY ?? LAWALLET_LEDGER_PUBKEY;
 
 // Voucher
 export const VOUCHER_PRIVATE_KEY: string = process.env.NOSTR_VOUCHER_PRIVATE_KEY ?? '';

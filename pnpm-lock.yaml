@@ -17,6 +17,9 @@ dependencies:
   '@lacrypta/typescript-config':
     specifier: ^1.0.0
     version: 1.0.0
+  '@lawallet/utils':
+    specifier: ^0.1.31
+    version: 0.1.31(typescript@5.4.5)
   '@nostr-dev-kit/ndk':
     specifier: ^2.8.2
     version: 2.8.2(typescript@5.4.5)
@@ -249,6 +252,16 @@ packages:
       '@scure/bip32': 1.3.1
       '@scure/bip39': 1.2.1
       typescript: 5.4.5
+    dev: false
+
+  /@lawallet/utils@0.1.31(typescript@5.4.5):
+    resolution: {integrity: sha512-gnPB3SQsRq7cAZwhu8qGkNte2WxNfuxuoII7bzV3KYI+IlliWcfqr/Nee5/qLkqga6M+tzjmYNX/Gq2SOoPvaQ==}
+    dependencies:
+      '@nostr-dev-kit/ndk': 2.8.2(typescript@5.4.5)
+      date-fns: 3.6.0
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
     dev: false
 
   /@next/env@14.2.3:
@@ -1178,6 +1191,10 @@ packages:
       es-errors: 1.3.0
       is-data-view: 1.0.1
     dev: true
+
+  /date-fns@3.6.0:
+    resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
+    dev: false
 
   /debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}

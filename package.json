@@ -16,6 +16,7 @@
     "@lacrypta/eslint-config": "^1.0.0",
     "@lacrypta/prettier-config": "^1.0.0",
     "@lacrypta/typescript-config": "^1.0.0",
+    "@lawallet/utils": "^0.1.31",
     "@nostr-dev-kit/ndk": "^2.8.2",
     "@prisma/client": "^5.15.0",
     "@sendgrid/mail": "^8.1.3",

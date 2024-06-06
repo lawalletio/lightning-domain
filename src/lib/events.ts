@@ -1,5 +1,6 @@
 import { finishEvent, type EventTemplate } from 'nostr-tools';
-import { LAWALLET_API_DOMAIN, NOSTR_LEDGER_PUBLIC_KEY, VOUCHER_AMOUNT, VOUCHER_TOKEN } from '~/constants/constants';
+import { LAWALLET_API_DOMAIN, VOUCHER_AMOUNT, VOUCHER_TOKEN } from '~/lib/envs';
+import { federationConfig } from './federation';
 
 export function generateIdentityEvent(name: string, pubkey: string): EventTemplate {
   return {
@@ -24,7 +25,7 @@ export function generateVoucherEvent(to: string): EventTemplate {
     }),
     tags: [
       ['t', 'internal-transaction-start'],
-      ['p', NOSTR_LEDGER_PUBLIC_KEY],
+      ['p', federationConfig.modulePubkeys.ledger],
       ['p', to],
     ],
     created_at: Math.floor(Date.now() / 1000),

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AUTOCREATE_NONCE } from '~/constants/constants';
+import { AUTOCREATE_NONCE } from '~/lib/envs';
 import { prisma } from '~/server/db';
 
 export async function GET(request: NextRequest, { params }: { params: { nonce: string } }) {

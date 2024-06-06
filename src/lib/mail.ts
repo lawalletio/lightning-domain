@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { SMTP_HOST, SMTP_PASSWORD, SMTP_USERNAME } from '~/constants/constants';
+import { SMTP_HOST, SMTP_PASSWORD, SMTP_USERNAME } from '~/lib/envs';
 
 export interface IContent {
   from: string;

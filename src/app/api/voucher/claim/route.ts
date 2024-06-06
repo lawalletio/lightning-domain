@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { VOUCHER_PRIVATE_KEY } from '~/constants/constants';
+import { VOUCHER_PRIVATE_KEY } from '~/lib/envs';
 import { generateVoucherEvent, publishEvent } from '~/lib/events';
 import { prisma } from '~/server/db';
 

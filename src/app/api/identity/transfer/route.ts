@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Event, nip26, validateEvent, verifySignature } from 'nostr-tools';
-import { NOSTR_CARD_PUBLIC_KEY } from '~/constants/constants';
+import { NOSTR_CARD_PUBLIC_KEY } from '~/lib/envs';
 import { validateSchema } from '~/lib/utils';
 import { prisma } from '~/server/db';
 import type { Identity } from '@prisma/client';

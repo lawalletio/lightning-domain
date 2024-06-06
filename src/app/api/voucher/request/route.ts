@@ -8,7 +8,7 @@ import type { Voucher } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IContent, sendEmergencyEmail } from '~/lib/mail';
 import { NextResponse } from 'next/server';
-import { SENGRID_API_KEY, VOUCHER_VERIFICATION_CODE_LENGTH } from '~/constants/constants';
+import { SENGRID_API_KEY, VOUCHER_VERIFICATION_CODE_LENGTH } from '~/lib/envs';
 
 const verificationCodeData: { subject: string; html: string } = verificationCodeEmail as {
   subject: string;

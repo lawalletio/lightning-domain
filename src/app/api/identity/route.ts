@@ -7,7 +7,7 @@ import { prisma } from '~/server/db';
 
 import reserved from '../../../constants/reserved.json';
 import { randomBytes } from 'crypto';
-import { ADMIN_PUBLISHER_PRIVATE_KEY, AUTOCREATE_NONCE } from '~/constants/constants';
+import { ADMIN_PUBLISHER_PRIVATE_KEY, AUTOCREATE_NONCE } from '~/lib/envs';
 
 async function createIdentity(request: Request) {
   const event: Event = (await request.json()) as unknown as Event;

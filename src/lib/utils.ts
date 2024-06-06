@@ -1,5 +1,5 @@
 import { type NostrEvent } from '@nostr-dev-kit/ndk';
-import { LAWALLET_API_DOMAIN } from '~/constants/constants';
+import { LAWALLET_API_DOMAIN } from '~/lib/envs';
 
 export function requiredEnvVar(key: string): string {
   const envVar = process.env[key];
