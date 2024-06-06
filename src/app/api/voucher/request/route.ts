@@ -8,7 +8,7 @@ import type { Voucher } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IContent, sendEmergencyEmail } from '~/lib/mail';
 import { NextResponse } from 'next/server';
-import { SENGRID_API_KEY, VOUCHER_VERIFICATION_CODE_LENGTH } from '~/lib/envs';
+import { SENDGRID_API_KEY, VOUCHER_VERIFICATION_CODE_LENGTH } from '~/lib/envs';
 
 const { verificationCode: verificationCodeEmail } = emailsJSON;
 
@@ -19,7 +19,7 @@ const verificationCodeData: { subject: string; html: string } = verificationCode
 
 const U_CONSTRAINT_VIOLATION = 'P2002';
 
-SG.setApiKey(SENGRID_API_KEY);
+SG.setApiKey(SENDGRID_API_KEY);
 
 type VoucherRequest = { name: string; email: string };
 

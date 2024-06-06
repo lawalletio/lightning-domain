@@ -7,7 +7,7 @@ import { prisma } from '~/server/db';
 
 import reserved from '../../../constants/reserved.json';
 import { randomBytes } from 'crypto';
-import { ADMIN_PUBLISHER_PRIVATE_KEY, AUTOCREATE_NONCE } from '~/lib/envs';
+import { ADMIN_PRIVATE_KEY, AUTOCREATE_NONCE } from '~/lib/envs';
 
 async function createIdentity(request: Request) {
   const event: Event = (await request.json()) as unknown as Event;
@@ -103,7 +103,7 @@ async function createIdentity(request: Request) {
     // Broadcast identity
     try {
       const _event = generateIdentityEvent(name, event.pubkey);
-      await publishEvent(_event, ADMIN_PUBLISHER_PRIVATE_KEY);
+      await publishEvent(_event, ADMIN_PRIVATE_KEY);
     } catch (e) {
       console.error('Failed to broadcast create identity event');
       console.error(e);

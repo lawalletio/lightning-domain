@@ -5,24 +5,21 @@ import { randomBytes } from 'crypto';
 import { NextResponse } from 'next/server';
 import { getPublicKey, nip04, nip19 } from 'nostr-tools';
 import { signUpInfo } from '~/lib/signup';
-import { ADMIN_PUBLISHER_PRIVATE_KEY } from '~/lib/envs';
+import { ADMIN_PRIVATE_KEY } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { initializeNDK, signNdk } from '~/lib/utils';
 
 export const revalidate = 0;
 
 export async function GET() {
-  if (!ADMIN_PUBLISHER_PRIVATE_KEY.length) return NextResponse.json({ data: 'Missing admin key' }, { status: 401 });
+  if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ data: 'Missing admin key' }, { status: 401 });
 
   try {
-    const adminPubkey: string = getPublicKey(ADMIN_PUBLISHER_PRIVATE_KEY);
+    const adminPubkey: string = getPublicKey(ADMIN_PRIVATE_KEY);
     const randomNonce: string = randomBytes(32).toString('hex');
 
-    const encryptedNonce: string = await nip04.encrypt(ADMIN_PUBLISHER_PRIVATE_KEY, adminPubkey, randomNonce);
-    const ndk: NDK = await initializeNDK(
-      federationConfig.relaysList,
-      new NDKPrivateKeySigner(ADMIN_PUBLISHER_PRIVATE_KEY),
-    );
+    const encryptedNonce: string = await nip04.encrypt(ADMIN_PRIVATE_KEY, adminPubkey, randomNonce);
+    const ndk: NDK = await initializeNDK(federationConfig.relaysList, new NDKPrivateKeySigner(ADMIN_PRIVATE_KEY));
 
     /* Buy Handle Request Event */
     const buyReqEvent: NostrEvent = await signNdk(ndk, buildBuyHandleRequest(adminPubkey, encryptedNonce), true);
