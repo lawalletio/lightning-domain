@@ -8,11 +8,11 @@ Just deploy it and assign your domain.
 ## Our stack
 
 - [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
+- [NextJS](https://nextjs.org)
 
 ## Documentation
 
-You can check the full documentation in [LaWallet Documentation](https://lawallet.io/identity-provider)
+You can check the full documentation in [LaWallet Documentation](https://backend.lawallet.io/identity-provider)
 
 ## One Click install
 
