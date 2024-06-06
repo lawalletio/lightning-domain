@@ -2,13 +2,15 @@ import SG from '@sendgrid/mail';
 import { randomInt } from 'crypto';
 
 import blacklist from '~/constants/blacklist.json';
-import { verificationCode as verificationCodeEmail } from '~/constants/emails.json';
+import emailsJSON from '~/constants/emails.json';
 import { prisma } from '~/server/db';
 import type { Voucher } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IContent, sendEmergencyEmail } from '~/lib/mail';
 import { NextResponse } from 'next/server';
 import { SENGRID_API_KEY, VOUCHER_VERIFICATION_CODE_LENGTH } from '~/lib/envs';
+
+const { verificationCode: verificationCodeEmail } = emailsJSON;
 
 const verificationCodeData: { subject: string; html: string } = verificationCodeEmail as {
   subject: string;
