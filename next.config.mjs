@@ -16,7 +16,7 @@ const config = {
   rewrites: async () => [
     {
       source: '/api/nonce',
-      destination: '/api/nonce/create',
+      destination: '/api/nonce/claim',
     },
     {
       source: '/.well-known/nostr.json',
