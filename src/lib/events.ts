@@ -1,5 +1,4 @@
 import { finishEvent, type EventTemplate } from 'nostr-tools';
-import { VOUCHER_AMOUNT, VOUCHER_TOKEN } from '~/lib/envs';
 import { federationConfig } from './federation';
 
 export function generateIdentityEvent(name: string, pubkey: string): EventTemplate {
@@ -10,23 +9,6 @@ export function generateIdentityEvent(name: string, pubkey: string): EventTempla
       ['t', 'new-user'],
       ['t', name],
       ['p', pubkey],
-    ],
-    created_at: Math.floor(Date.now() / 1000),
-  };
-}
-
-export function generateVoucherEvent(to: string): EventTemplate {
-  return {
-    kind: 1112,
-    content: JSON.stringify({
-      tokens: {
-        [VOUCHER_TOKEN]: VOUCHER_AMOUNT,
-      },
-    }),
-    tags: [
-      ['t', 'internal-transaction-start'],
-      ['p', federationConfig.modulePubkeys.ledger],
-      ['p', to],
     ],
     created_at: Math.floor(Date.now() / 1000),
   };
