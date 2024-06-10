@@ -17,7 +17,8 @@ interface ExtendedLnUrlRawData extends LnUrlRawData {
 }
 
 export async function GET() {
-  if (!SIGNUP_ENABLED) return NextResponse.json({ error: 'Sign up disabled' }, { status: 422 });
+  if (!SIGNUP_ENABLED || SIGNUP_MSATS_PRICE < 1000)
+    return NextResponse.json({ error: 'Sign up disabled' }, { status: 422 });
   if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ error: 'Missing admin key' }, { status: 401 });
 
   try {
