@@ -26,7 +26,7 @@ export async function GET() {
 
     const receiverAccountPubKey: string = (lnAddressReceiver.lnurlpData.rawData as ExtendedLnUrlRawData).accountPubKey;
 
-    if (!lnAddressReceiver || receiverAccountPubKey) {
+    if (!lnAddressReceiver || !receiverAccountPubKey) {
       throw new Error(
         'SIGN_UP_NIP05_RECEIVER_ERROR: Could not get the `accountPubKey` field of the NIP05 that receives the sign up funds.',
       );
