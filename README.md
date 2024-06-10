@@ -26,6 +26,10 @@ You can check the full documentation in [LaWallet Documentation](https://backend
    DATABASE_URL="postgresql://" # < Database URI
    ADMIN_NOSTR_PRIVATE_KEY="..." # < Nostr Admin Private Key (hex)
    AUTOCREATE_NONCE="SECRET_NONCE" # < Remember this value
+
+   SIGNUP_ENABLED=1
+   SIGNUP_NIP05_RECEIVER=tesoro@lawallet.ar
+   SIGNUP_MSATS_PRICE=21000
    ```
 
 3. Deploy

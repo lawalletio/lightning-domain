@@ -3,12 +3,12 @@ import { DecodedInvoiceReturns } from '@lawallet/utils/types';
 import NDK, { NDKEvent, NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/ndk';
 import { NextResponse } from 'next/server';
 import { Event, getPublicKey, nip04, validateEvent, verifySignature } from 'nostr-tools';
-import { signUpInfo } from '~/lib/signup';
-import { ADMIN_PRIVATE_KEY } from '~/lib/envs';
+import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_MSATS_PRICE } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { GenerateNonceReturns, generateNonce, initializeNDK } from '~/lib/utils';
 
 export async function POST(request: Request) {
+  if (!SIGNUP_ENABLED) return NextResponse.json({ data: 'Sign up disabled' }, { status: 422 });
   if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ data: 'Missing admin key' }, { status: 401 });
 
   try {
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     const decodedInvoice: DecodedInvoiceReturns | undefined = decodeInvoice(payedInvoice);
 
     if (!validateEvent(zapReceipt) || !buyRequestId || !decodedInvoice) throw new Error('Malformed event');
-    if (Number(decodedInvoice.millisatoshis) !== signUpInfo.price) throw new Error('Insufficient payment');
+    if (Number(decodedInvoice.millisatoshis) !== SIGNUP_MSATS_PRICE) throw new Error('Insufficient payment');
 
     const ndk: NDK = await initializeNDK(federationConfig.relaysList, new NDKPrivateKeySigner(ADMIN_PRIVATE_KEY));
 
