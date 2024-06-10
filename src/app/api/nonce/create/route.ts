@@ -8,17 +8,17 @@ import { federationConfig } from '~/lib/federation';
 import { GenerateNonceReturns, generateNonce, initializeNDK } from '~/lib/utils';
 
 export async function POST(request: Request) {
-  if (!SIGNUP_ENABLED) return NextResponse.json({ data: 'Sign up disabled' }, { status: 422 });
-  if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ data: 'Missing admin key' }, { status: 401 });
+  if (!SIGNUP_ENABLED) return NextResponse.json({ error: 'Sign up disabled' }, { status: 422 });
+  if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ error: 'Missing admin key' }, { status: 401 });
 
   try {
     const adminPubkey: string = getPublicKey(ADMIN_PRIVATE_KEY);
 
     const zapReceipt: NostrEvent = await request.json();
-    if (!zapReceipt) return NextResponse.json({ data: 'Missing zap receipt event' }, { status: 401 });
+    if (!zapReceipt) return NextResponse.json({ error: 'Missing zap receipt event' }, { status: 401 });
 
     const zapRequest: NostrEvent = JSON.parse(getTagValue(zapReceipt.tags, 'description'));
-    if (!zapRequest) return NextResponse.json({ data: 'Missing zap request event' }, { status: 401 });
+    if (!zapRequest) return NextResponse.json({ error: 'Missing zap request event' }, { status: 401 });
 
     if (
       !verifySignature(zapReceipt as Event) ||
@@ -48,8 +48,8 @@ export async function POST(request: Request) {
     const createdNonce: GenerateNonceReturns = await generateNonce(createNonceEvent, adminPubkey);
     if (!createdNonce.success) throw new Error(createdNonce.message);
 
-    return NextResponse.json({ data: { nonce: createdNonce.message } }, { status: 200 });
+    return NextResponse.json({ nonce: createdNonce.message }, { status: 200 });
   } catch (e: unknown) {
-    return NextResponse.json({ data: (e as Error).message }, { status: 422 });
+    return NextResponse.json({ error: (e as Error).message }, { status: 422 });
   }
 }

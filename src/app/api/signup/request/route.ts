@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto';
 import { NextResponse } from 'next/server';
 import { getPublicKey, nip04, nip19 } from 'nostr-tools';
 
-import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_MSATS_PRICE, SIGNUP_NIP05_RECEIVER } from '~/lib/envs';
+import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_MSATS_PRICE, SIGNUP_LAWALLET_RECEIVER } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { initializeNDK, signNdk } from '~/lib/utils';
 import { LightningAddress, type LnUrlRawData } from '@getalby/lightning-tools';
@@ -17,18 +17,18 @@ interface ExtendedLnUrlRawData extends LnUrlRawData {
 }
 
 export async function GET() {
-  if (!SIGNUP_ENABLED) return NextResponse.json({ data: 'Sign up disabled' }, { status: 422 });
-  if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ data: 'Missing admin key' }, { status: 401 });
+  if (!SIGNUP_ENABLED) return NextResponse.json({ error: 'Sign up disabled' }, { status: 422 });
+  if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ error: 'Missing admin key' }, { status: 401 });
 
   try {
-    const lnAddressReceiver = new LightningAddress(SIGNUP_NIP05_RECEIVER);
+    const lnAddressReceiver = new LightningAddress(SIGNUP_LAWALLET_RECEIVER);
     await lnAddressReceiver.fetch();
 
     const receiverAccountPubKey: string = (lnAddressReceiver.lnurlpData.rawData as ExtendedLnUrlRawData).accountPubKey;
 
     if (!lnAddressReceiver || !receiverAccountPubKey) {
       throw new Error(
-        'SIGN_UP_NIP05_RECEIVER_ERROR: Could not get the `accountPubKey` field of the NIP05 that receives the sign up funds.',
+        'SIGN_UP_LAWALLET_RECEIVER_ERROR: Could not get the `accountPubKey` field of the NIP05 that receives the sign up funds.',
       );
     }
 
@@ -56,6 +56,6 @@ export async function GET() {
 
     return NextResponse.json({ zapRequest: JSON.stringify(zapRequestEvent), invoice: bolt11 }, { status: 200 });
   } catch (e: unknown) {
-    return NextResponse.json({ data: (e as Error).message }, { status: 422 });
+    return NextResponse.json({ error: (e as Error).message }, { status: 422 });
   }
 }
