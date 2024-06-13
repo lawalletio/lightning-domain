@@ -28,7 +28,7 @@ You can check the full documentation in [LaWallet Documentation](https://backend
    AUTOCREATE_NONCE="SECRET_NONCE" # < Remember this value
 
    SIGNUP_ENABLED=1
-   SIGNUP_LAWALLET_RECEIVER=tesoro@lawallet.ar
+   SIGNUP_NIP05_RECEIVER=tesoro@lawallet.ar
    SIGNUP_MSATS_PRICE=21000
    ```
 

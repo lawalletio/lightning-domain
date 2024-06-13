@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 import { getPublicKey, nip04 } from 'nostr-tools';
 
 import { LightningAddress } from '@getalby/lightning-tools';
-import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_LAWALLET_RECEIVER, SIGNUP_MSATS_PRICE } from '~/lib/envs';
+import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_NIP05_RECEIVER, SIGNUP_MSATS_PRICE } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { initializeNDK, signNdkEvent } from '~/lib/utils';
 
@@ -17,7 +17,7 @@ export async function GET() {
   if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ error: 'Missing admin key' }, { status: 401 });
 
   try {
-    const lnAddressReceiver = new LightningAddress(SIGNUP_LAWALLET_RECEIVER);
+    const lnAddressReceiver = new LightningAddress(SIGNUP_NIP05_RECEIVER);
     await lnAddressReceiver.fetch();
 
     if (!lnAddressReceiver || !lnAddressReceiver.nostrPubkey) {
