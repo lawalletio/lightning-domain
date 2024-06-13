@@ -1,20 +1,15 @@
 import { buildBuyHandleRequest, buildZapRequestEvent } from '@lawallet/utils';
-import { requestInvoice } from '@lawallet/utils/actions';
 import NDK, { NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/ndk';
 import { randomBytes } from 'crypto';
 import { NextResponse } from 'next/server';
-import { getPublicKey, nip04, nip19 } from 'nostr-tools';
+import { getPublicKey, nip04 } from 'nostr-tools';
 
-import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_MSATS_PRICE, SIGNUP_LAWALLET_RECEIVER } from '~/lib/envs';
+import { LightningAddress } from '@getalby/lightning-tools';
+import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_LAWALLET_RECEIVER, SIGNUP_MSATS_PRICE } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { initializeNDK, signNdk } from '~/lib/utils';
-import { LightningAddress, type LnUrlRawData } from '@getalby/lightning-tools';
 
 export const revalidate = 0;
-
-interface ExtendedLnUrlRawData extends LnUrlRawData {
-  accountPubKey: string;
-}
 
 export async function GET() {
   if (!SIGNUP_ENABLED || SIGNUP_MSATS_PRICE < 1000)
@@ -25,12 +20,8 @@ export async function GET() {
     const lnAddressReceiver = new LightningAddress(SIGNUP_LAWALLET_RECEIVER);
     await lnAddressReceiver.fetch();
 
-    const receiverAccountPubKey: string = (lnAddressReceiver.lnurlpData.rawData as ExtendedLnUrlRawData).accountPubKey;
-
-    if (!lnAddressReceiver || !receiverAccountPubKey) {
-      throw new Error(
-        'SIGN_UP_LAWALLET_RECEIVER_ERROR: Could not get the `accountPubKey` field of the NIP05 that receives the sign up funds.',
-      );
+    if (!lnAddressReceiver || !lnAddressReceiver.nostrPubkey) {
+      throw new Error('SIGN_UP_LAWALLET_RECEIVER_ERROR: address does not accept Nostr zaps');
     }
 
     const adminPubkey: string = getPublicKey(ADMIN_PRIVATE_KEY);
@@ -44,18 +35,20 @@ export async function GET() {
     /* Zap Request Event */
     const zapRequestEvent: NostrEvent | undefined = await signNdk(
       ndk,
-      buildZapRequestEvent(adminPubkey, receiverAccountPubKey, SIGNUP_MSATS_PRICE, federationConfig, [
+      buildZapRequestEvent(adminPubkey, lnAddressReceiver.nostrPubkey, SIGNUP_MSATS_PRICE, federationConfig, [
         ['e', buyReqEvent.id!],
       ]),
     );
 
     const zapRequestURI: string = encodeURI(JSON.stringify(zapRequestEvent));
+    const zapParams: { amount: string; nostr: string } = {
+      amount: SIGNUP_MSATS_PRICE.toString(),
+      nostr: zapRequestURI,
+    };
 
-    const bolt11 = await requestInvoice(
-      `${federationConfig.endpoints.gateway}/lnurlp/${nip19.npubEncode(receiverAccountPubKey)}/callback?amount=${SIGNUP_MSATS_PRICE}&nostr=${zapRequestURI}`,
-    );
+    const { paymentRequest } = await lnAddressReceiver.generateInvoice(zapParams);
 
-    return NextResponse.json({ zapRequest: JSON.stringify(zapRequestEvent), invoice: bolt11 }, { status: 200 });
+    return NextResponse.json({ zapRequest: JSON.stringify(zapRequestEvent), invoice: paymentRequest }, { status: 200 });
   } catch (e: unknown) {
     return NextResponse.json({ error: (e as Error).message }, { status: 422 });
   }
