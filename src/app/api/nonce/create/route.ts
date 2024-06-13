@@ -1,11 +1,42 @@
 import { buildCreateNonceEvent, decodeInvoice, getTagValue } from '@lawallet/utils';
 import { DecodedInvoiceReturns } from '@lawallet/utils/types';
 import NDK, { NDKEvent, NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/ndk';
+import { randomBytes } from 'crypto';
 import { NextResponse } from 'next/server';
 import { Event, getPublicKey, nip04, validateEvent, verifySignature } from 'nostr-tools';
 import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_MSATS_PRICE } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
-import { GenerateNonceReturns, generateNonce, initializeNDK } from '~/lib/utils';
+import { GenerateNonceReturns, initializeNDK, validateSchema } from '~/lib/utils';
+import { prisma } from '~/server/db';
+
+async function generateNonce(event: NDKEvent, adminPubkey: string): Promise<GenerateNonceReturns> {
+  // Validate event
+  try {
+    if (!validateEvent(event)) return { success: false, status: 422, message: 'Malformed event' };
+    if (!verifySignature(event as Event)) return { success: false, status: 422, message: 'Invalid signature' };
+
+    validateSchema(event as NostrEvent);
+    if (event.tagValue('t') !== 'create-nonce')
+      return { success: false, status: 422, message: 'Only create-nonce subkind is allowed' };
+
+    // Authorization
+    if (event.pubkey !== adminPubkey) return { success: false, status: 403, message: 'Pubkey not authorized' };
+
+    const eventNonce: string | undefined = event.tagValue('nonce');
+    const entropy: string = eventNonce ?? randomBytes(32).toString('hex');
+
+    // Create nonce
+    const createdNonce = await prisma.nonce.create({
+      data: {
+        nonce: entropy,
+      },
+    });
+
+    return { success: true, status: 200, message: createdNonce.nonce };
+  } catch (e: unknown) {
+    return { success: false, status: 422, message: (e as Error).message };
+  }
+}
 
 export async function POST(request: Request) {
   if (!SIGNUP_ENABLED) return NextResponse.json({ error: 'Sign up disabled' }, { status: 422 });
@@ -23,8 +54,7 @@ export async function POST(request: Request) {
     if (
       !verifySignature(zapReceipt as Event) ||
       !verifySignature(zapRequest as Event) ||
-      zapRequest.pubkey !== adminPubkey ||
-      zapReceipt.pubkey !== federationConfig.modulePubkeys.urlx
+      zapRequest.pubkey !== adminPubkey
     )
       throw new Error('Invalid signature');
 

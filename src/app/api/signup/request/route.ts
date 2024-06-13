@@ -7,7 +7,7 @@ import { getPublicKey, nip04 } from 'nostr-tools';
 import { LightningAddress } from '@getalby/lightning-tools';
 import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_LAWALLET_RECEIVER, SIGNUP_MSATS_PRICE } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
-import { initializeNDK, signNdk } from '~/lib/utils';
+import { initializeNDK, signNdkEvent } from '~/lib/utils';
 
 export const revalidate = 0;
 
@@ -30,10 +30,10 @@ export async function GET() {
     const ndk: NDK = await initializeNDK(federationConfig.relaysList, new NDKPrivateKeySigner(ADMIN_PRIVATE_KEY));
 
     /* Buy Handle Request Event */
-    const buyReqEvent: NostrEvent = await signNdk(ndk, buildBuyHandleRequest(adminPubkey, encryptedNonce), true);
+    const buyReqEvent: NostrEvent = await signNdkEvent(ndk, buildBuyHandleRequest(adminPubkey, encryptedNonce), true);
 
     /* Zap Request Event */
-    const zapRequestEvent: NostrEvent | undefined = await signNdk(
+    const zapRequestEvent: NostrEvent | undefined = await signNdkEvent(
       ndk,
       buildZapRequestEvent(adminPubkey, lnAddressReceiver.nostrPubkey, SIGNUP_MSATS_PRICE, federationConfig, [
         ['e', buyReqEvent.id!],
