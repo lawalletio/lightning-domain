@@ -21,7 +21,7 @@ export async function GET() {
     await lnAddressReceiver.fetch();
 
     if (!lnAddressReceiver || !lnAddressReceiver.nostrPubkey) {
-      throw new Error('SIGN_UP_LAWALLET_RECEIVER_ERROR: address does not accept Nostr zaps');
+      throw new Error('NIP05 nostr pubkey not found');
     }
 
     const adminPubkey: string = getPublicKey(ADMIN_PRIVATE_KEY);
@@ -40,10 +40,9 @@ export async function GET() {
       ]),
     );
 
-    const zapRequestURI: string = encodeURI(JSON.stringify(zapRequestEvent));
     const zapParams: { amount: string; nostr: string } = {
       amount: SIGNUP_MSATS_PRICE.toString(),
-      nostr: zapRequestURI,
+      nostr: JSON.stringify(zapRequestEvent),
     };
 
     const { paymentRequest } = await lnAddressReceiver.generateInvoice(zapParams);
