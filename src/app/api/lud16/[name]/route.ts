@@ -20,6 +20,8 @@ export async function GET(request: NextRequest, { params }: { params: { name: st
   // Check if exists
   if (!identityRecord) return NextResponse.json({ data: 'Not found' }, { status: 404 });
 
+  const pubkey: string = identityRecord.pubkey;
+
   // Respond LUD06
-  return NextResponse.json({ ...generateLUD06(name) }, { status: 200 });
+  return NextResponse.json({ ...generateLUD06(pubkey) }, { status: 200 });
 }
