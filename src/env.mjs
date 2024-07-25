@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from 'zod';
 
 export const env = createEnv({
   /**
@@ -10,7 +10,7 @@ export const env = createEnv({
     // POSTGRES_PRISMA_URL: z.string().url(),
     // POSTGRES_PRISMA_URL_NON_POOLING: z.string().url(),
     // NOSTR_NONCE_ADMIN_PUBLIC_KEY: z.string().url(),
-    NODE_ENV: z.enum(["development", "test", "production"]),
+    NODE_ENV: z.enum(['development', 'test', 'production']),
   },
 
   client: {},
@@ -22,7 +22,6 @@ export const env = createEnv({
   runtimeEnv: {
     // POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL,
     // POSTGRES_PRISMA_URL_NON_POOLING: process.env.POSTGRES_PRISMA_URL_NON_POOLING,
-    // NOSTR_NONCE_ADMIN_PUBLIC_KEY: process.env.NOSTR_NONCE_ADMIN_PUBLIC_KEY,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },

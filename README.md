@@ -9,21 +9,27 @@ Just deploy it and assign your domain.
 
 - [Prisma](https://prisma.io)
 - [Tailwind CSS](https://tailwindcss.com)
+- [NextJS](https://nextjs.org)
 
 ## Documentation
 
-You can check the full documentation in [LaWallet Documentation](https://lawallet.io/identity-provider)
+You can check the full documentation in [LaWallet Documentation](https://backend.lawallet.io/identity-provider)
 
 ## One Click install
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flawalletio%2Flightning-domain&env=LAWALLET_API_DOMAIN,AUTOCREATE_NONCE&project-name=lightning-domain&repository-name=lightning-domain&integration-ids=oac_3sK3gnG06emjIEVL09jjntDD)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flawalletio%2Flightning-domain&env=ADMIN_NOSTR_PRIVATE_KEY,AUTOCREATE_NONCE&project-name=lightning-domain&repository-name=lightning-domain&integration-ids=oac_3sK3gnG06emjIEVL09jjntDD)
 
 1. Select a name for your repo
 2. Set the environment variables
 
    ```bash
-   LAWALLET_API_DOMAIN="https://api.lawallet.ar"
+   DATABASE_URL="postgresql://" # < Database URI
+   ADMIN_NOSTR_PRIVATE_KEY="..." # < Nostr Admin Private Key (hex)
    AUTOCREATE_NONCE="SECRET_NONCE" # < Remember this value
+
+   SIGNUP_ENABLED=1
+   SIGNUP_NIP05_RECEIVER=tesoro@lawallet.ar
+   SIGNUP_MSATS_PRICE=21000
    ```
 
 3. Deploy
