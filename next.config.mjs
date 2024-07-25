@@ -20,7 +20,7 @@ const config = {
     },
     {
       source: '/.well-known/nostr.json',
-      destination: '/api/identity/get',
+      destination: '/api/identity',
     },
     {
       source: '/.well-known/lnurlp/:name',
