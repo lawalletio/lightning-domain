@@ -43,9 +43,8 @@ export async function POST(request: Request) {
           pubkey: newPubkey,
         },
       });
-
-      return NextResponse.json({ name: newIdentity.name, pubkey: newIdentity.pubkey }, { status: 200 });
     });
+    return NextResponse.json({ name: newIdentity.name, pubkey: newIdentity.pubkey }, { status: 200 });
   } catch (error: unknown) {
     const message = (error as Error).message;
     return NextResponse.json({ error: message }, { status: 400 });
