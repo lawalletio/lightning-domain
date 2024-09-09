@@ -23,6 +23,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ reason: (e as Error).message }, { status: 422 });
   }
 
+  const newIdentity: Identity | null;
   try {
     // Start transaction
     await prisma.$transaction(async (tx) => {
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
       const oldIdentity: Identity | null = await tx.identity.findUnique({ where: { pubkey: oldPubkey } });
       if (null === oldIdentity) throw new Error('Existing identity not found');
 
-      const newIdentity: Identity | null = await tx.identity.update({
+      newIdentity = await tx.identity.update({
         where: {
           pubkey: oldPubkey,
         },
