@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ reason: (e as Error).message }, { status: 422 });
   }
 
-  const newIdentity: Identity | null;
+  const newIdentity: Identity | null = null;
   try {
     // Start transaction
     await prisma.$transaction(async (tx) => {
