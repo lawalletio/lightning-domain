@@ -1,4 +1,7 @@
 import NDK, { NDKEvent, NDKSigner, type NostrEvent } from '@nostr-dev-kit/ndk';
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
 import { federationConfig } from './federation';
 
 export const initializeNDK = async (relays: string[], signer: NDKSigner) => {
@@ -74,3 +77,7 @@ export type GenerateNonceReturns = {
   status: 200 | 403 | 422;
   message: string;
 };
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
