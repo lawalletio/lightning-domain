@@ -52,11 +52,11 @@
     "typescript": "^5.2.0"
   },
   "overrides": {
-    "nostr-tools": "npm:@lawallet/nostr-tools"
+    "nostr-tools": "npm:@lawallet/nostr-tools@1.17.0"
   },
   "pnpm": {
     "overrides": {
-      "nostr-tools": "npm:@lawallet/nostr-tools"
+      "nostr-tools": "npm:@lawallet/nostr-tools@1.17.0"
     }
   },
   "ct3aMetadata": {
