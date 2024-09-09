@@ -38,15 +38,31 @@ async function generateNonce(event: NDKEvent, adminPubkey: string): Promise<Gene
   }
 }
 
+async function handleCreateNonceEvent(adminPubkey: string, ndk: NDK, buyRequestEvent: NostrEvent) {
+  const decryptedNonce: string = await nip04.decrypt(ADMIN_PRIVATE_KEY, adminPubkey, buyRequestEvent.content);
+
+  const createNonceEvent: NDKEvent = new NDKEvent(ndk, buildCreateNonceEvent(adminPubkey, decryptedNonce));
+  await createNonceEvent.sign();
+
+  const createdNonce: GenerateNonceReturns = await generateNonce(createNonceEvent, adminPubkey);
+  if (!createdNonce.success) throw new Error(createdNonce.message);
+
+  return NextResponse.json({ nonce: createdNonce.message }, { status: 200 });
+}
+
 export async function POST(request: Request) {
   if (!SIGNUP_ENABLED) return NextResponse.json({ error: 'Sign up disabled' }, { status: 422 });
   if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ error: 'Missing admin key' }, { status: 401 });
 
   try {
     const adminPubkey: string = getPublicKey(ADMIN_PRIVATE_KEY);
+    const ndk: NDK = await initializeNDK(federationConfig.relaysList, new NDKPrivateKeySigner(ADMIN_PRIVATE_KEY));
 
     const zapReceipt: NostrEvent = await request.json();
     if (!zapReceipt) return NextResponse.json({ error: 'Missing zap receipt event' }, { status: 401 });
+
+    /* Handle free signUp */
+    if (SIGNUP_MSATS_PRICE === 0) return handleCreateNonceEvent(adminPubkey, ndk, zapReceipt);
 
     const zapRequest: NostrEvent = JSON.parse(getTagValue(zapReceipt.tags, 'description'));
     if (!zapRequest) return NextResponse.json({ error: 'Missing zap request event' }, { status: 401 });
@@ -65,20 +81,10 @@ export async function POST(request: Request) {
     if (!validateEvent(zapReceipt) || !buyRequestId || !decodedInvoice) throw new Error('Malformed event');
     if (Number(decodedInvoice.millisatoshis) !== SIGNUP_MSATS_PRICE) throw new Error('Insufficient payment');
 
-    const ndk: NDK = await initializeNDK(federationConfig.relaysList, new NDKPrivateKeySigner(ADMIN_PRIVATE_KEY));
-
     const buyRequestEvent: NDKEvent | null = await ndk.fetchEvent({ ids: [buyRequestId], authors: [adminPubkey] });
     if (!buyRequestEvent) throw new Error('Invalid buy request event');
 
-    const decryptedNonce: string = await nip04.decrypt(ADMIN_PRIVATE_KEY, adminPubkey, buyRequestEvent.content);
-
-    const createNonceEvent: NDKEvent = new NDKEvent(ndk, buildCreateNonceEvent(adminPubkey, decryptedNonce));
-    await createNonceEvent.sign();
-
-    const createdNonce: GenerateNonceReturns = await generateNonce(createNonceEvent, adminPubkey);
-    if (!createdNonce.success) throw new Error(createdNonce.message);
-
-    return NextResponse.json({ nonce: createdNonce.message }, { status: 200 });
+    return handleCreateNonceEvent(adminPubkey, ndk, await buyRequestEvent.toNostrEvent());
   } catch (e: unknown) {
     return NextResponse.json({ error: (e as Error).message }, { status: 422 });
   }

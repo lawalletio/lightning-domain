@@ -12,8 +12,7 @@ import { initializeNDK, signNdkEvent } from '~/lib/utils';
 export const revalidate = 0;
 
 export async function GET() {
-  if (!SIGNUP_ENABLED || SIGNUP_MSATS_PRICE < 1000)
-    return NextResponse.json({ error: 'Sign up disabled' }, { status: 422 });
+  if (!SIGNUP_ENABLED) return NextResponse.json({ error: 'Sign up disabled' }, { status: 422 });
   if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ error: 'Missing admin key' }, { status: 401 });
 
   try {
@@ -32,6 +31,11 @@ export async function GET() {
     /* Buy Handle Request Event */
     const buyReqEvent: NostrEvent = await signNdkEvent(ndk, buildBuyHandleRequest(adminPubkey, encryptedNonce), true);
 
+    /* Free signup */
+    if (SIGNUP_MSATS_PRICE === 0) {
+      return NextResponse.json({ requirePayment: false, data: { buyEvent: buyReqEvent } }, { status: 200 });
+    }
+
     /* Zap Request Event */
     const zapRequestEvent: NostrEvent | undefined = await signNdkEvent(
       ndk,
@@ -47,7 +51,10 @@ export async function GET() {
 
     const { paymentRequest } = await lnAddressReceiver.generateInvoice(zapParams);
 
-    return NextResponse.json({ zapRequest: JSON.stringify(zapRequestEvent), invoice: paymentRequest }, { status: 200 });
+    return NextResponse.json(
+      { requirePayment: true, data: { zapRequest: JSON.stringify(zapRequestEvent), invoice: paymentRequest } },
+      { status: 200 },
+    );
   } catch (e: unknown) {
     return NextResponse.json({ error: (e as Error).message }, { status: 422 });
   }
