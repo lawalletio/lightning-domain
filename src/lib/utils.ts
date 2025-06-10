@@ -3,6 +3,7 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import { federationConfig } from './federation';
+const DISABLE_LUD16_CALLBACK = process.env.DISABLE_LUD16_CALLBACK === 'true';
 
 export const initializeNDK = async (relays: string[], signer: NDKSigner) => {
   const ndkProvider = new NDK({
@@ -56,7 +57,7 @@ export function generateLUD06(pubkey: string) {
     status: 'OK',
     tag: 'payRequest',
     commentAllowed: 255,
-    callback: `${federationConfig.endpoints.gateway}/lnurlp/${pubkey}/callback`,
+    callback: DISABLE_LUD16_CALLBACK ? undefined : `${federationConfig.endpoints.gateway}/lnurlp/${pubkey}/callback`,
     metadata: '[["text/plain", "lawallet"]]',
     minSendable: 1000,
     maxSendable: 10000000000,
@@ -81,3 +82,7 @@ export type GenerateNonceReturns = {
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export const nowInSeconds = (): number => {
+  return Math.floor(Date.now() / 1000);
+};

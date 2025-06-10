@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Event, validateEvent, verifySignature } from 'nostr-tools';
+import { Event, verifyEvent } from 'nostr-tools';
 import { validateSchema } from '~/lib/utils';
 
 import { generateIdentityEvent, publishEvent } from '~/lib/events';
@@ -13,8 +13,7 @@ async function createIdentity(request: Request) {
   const event: Event = (await request.json()) as unknown as Event;
 
   try {
-    if (!validateEvent(event)) throw new Error('Malformed event');
-    if (!verifySignature(event)) throw new Error('Invalid signature');
+    if (!verifyEvent(event)) throw new Error('Invalid signature');
     validateSchema(event);
 
     if (event.tags.find((t) => t[0] === 't')![1] !== 'create-identity')

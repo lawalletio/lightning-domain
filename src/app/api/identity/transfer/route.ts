@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Event, nip26, validateEvent, verifySignature } from 'nostr-tools';
+import { Event, verifyEvent } from 'nostr-tools';
 import { validateSchema } from '~/lib/utils';
 import { prisma } from '~/server/db';
 import type { Identity } from '@prisma/client';
@@ -10,8 +10,7 @@ export async function POST(request: Request) {
 
   // Validate event
   try {
-    if (!validateEvent(event)) throw new Error('Malformed event');
-    if (!verifySignature(event)) throw new Error('Invalid signature');
+    if (!verifyEvent(event)) throw new Error('Invalid signature');
     validateSchema(event);
 
     if (event.tags.find((t) => t[0] === 't')![1] !== 'identity-transfer')
@@ -31,19 +30,20 @@ export async function POST(request: Request) {
       if (null === newPubkey) throw new Error('Cannot retrieve new pubkey');
       if (await tx.identity.count({ where: { pubkey: newPubkey } })) throw new Error('New identity already exists');
 
-      const oldPubkey: string | null = nip26.getDelegator(event);
-      if (null === oldPubkey) throw new Error('Cannot retrieve delegator');
-      const oldIdentity: Identity | null = await tx.identity.findUnique({ where: { pubkey: oldPubkey } });
-      if (null === oldIdentity) throw new Error('Existing identity not found');
+      // const oldPubkey: string | null = nip26.getDelegator(event);
+      throw new Error('NIP26 Not supported');
+      // if (null === oldPubkey) throw new Error('Cannot retrieve delegator');
+      // const oldIdentity: Identity | null = await tx.identity.findUnique({ where: { pubkey: oldPubkey } });
+      // if (null === oldIdentity) throw new Error('Existing identity not found');
 
-      newIdentity = await tx.identity.update({
-        where: {
-          pubkey: oldPubkey,
-        },
-        data: {
-          pubkey: newPubkey,
-        },
-      });
+      // newIdentity = await tx.identity.update({
+      //   where: {
+      //     pubkey: oldPubkey,
+      //   },
+      //   data: {
+      //     pubkey: newPubkey,
+      //   },
+      // });
     });
     return NextResponse.json({ name: newIdentity.name, pubkey: newIdentity.pubkey }, { status: 200 });
   } catch (error: unknown) {

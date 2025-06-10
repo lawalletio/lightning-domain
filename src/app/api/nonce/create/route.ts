@@ -1,19 +1,19 @@
-import { buildCreateNonceEvent, decodeInvoice, getTagValue } from '@lawallet/utils';
-import { DecodedInvoiceReturns } from '@lawallet/utils/types';
+import { decode as decodeInvoice } from 'bolt11';
 import NDK, { NDKEvent, NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/ndk';
 import { randomBytes } from 'crypto';
 import { NextResponse } from 'next/server';
-import { Event, getPublicKey, nip04, validateEvent, verifySignature } from 'nostr-tools';
+import { Event, getPublicKey, nip04, validateEvent, verifyEvent } from 'nostr-tools';
+import { hexToBytes } from 'nostr-tools/utils';
 import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_MSATS_PRICE } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { GenerateNonceReturns, initializeNDK, validateSchema } from '~/lib/utils';
 import { prisma } from '~/server/db';
+import { buildCreateNonceEvent, getTagValue } from '~/lib/events';
 
 async function generateNonce(event: NDKEvent, adminPubkey: string): Promise<GenerateNonceReturns> {
   // Validate event
   try {
-    if (!validateEvent(event)) return { success: false, status: 422, message: 'Malformed event' };
-    if (!verifySignature(event as Event)) return { success: false, status: 422, message: 'Invalid signature' };
+    if (!verifyEvent(event as Event)) return { success: false, status: 422, message: 'Invalid signature' };
 
     validateSchema(event as NostrEvent);
     if (event.tagValue('t') !== 'create-nonce')
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
   if (!ADMIN_PRIVATE_KEY.length) return NextResponse.json({ error: 'Missing admin key' }, { status: 401 });
 
   try {
-    const adminPubkey: string = getPublicKey(ADMIN_PRIVATE_KEY);
+    const adminPubkey: string = getPublicKey(hexToBytes(ADMIN_PRIVATE_KEY));
     const ndk: NDK = await initializeNDK(federationConfig.relaysList, new NDKPrivateKeySigner(ADMIN_PRIVATE_KEY));
 
     const zapReceipt: NostrEvent = await request.json();
@@ -67,16 +67,13 @@ export async function POST(request: Request) {
     const zapRequest: NostrEvent = JSON.parse(getTagValue(zapReceipt.tags, 'description'));
     if (!zapRequest) return NextResponse.json({ error: 'Missing zap request event' }, { status: 401 });
 
-    if (
-      !verifySignature(zapReceipt as Event) ||
-      !verifySignature(zapRequest as Event) ||
-      zapRequest.pubkey !== adminPubkey
-    )
+    if (!verifyEvent(zapReceipt as Event) || !verifyEvent(zapRequest as Event) || zapRequest.pubkey !== adminPubkey)
       throw new Error('Invalid signature');
 
     const buyRequestId: string = getTagValue(zapRequest.tags, 'e');
     const payedInvoice: string = getTagValue(zapReceipt.tags, 'bolt11');
-    const decodedInvoice: DecodedInvoiceReturns | undefined = decodeInvoice(payedInvoice);
+
+    const decodedInvoice = decodeInvoice(payedInvoice);
 
     if (!validateEvent(zapReceipt) || !buyRequestId || !decodedInvoice) throw new Error('Malformed event');
     if (Number(decodedInvoice.millisatoshis) !== SIGNUP_MSATS_PRICE) throw new Error('Insufficient payment');

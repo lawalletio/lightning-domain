@@ -1,4 +1,3 @@
-import { buildBuyHandleRequest, buildZapRequestEvent } from '@lawallet/utils';
 import NDK, { NDKPrivateKeySigner, NostrEvent } from '@nostr-dev-kit/ndk';
 import { randomBytes } from 'crypto';
 import { NextResponse } from 'next/server';
@@ -8,6 +7,8 @@ import { LightningAddress } from '@getalby/lightning-tools';
 import { ADMIN_PRIVATE_KEY, SIGNUP_ENABLED, SIGNUP_NIP05_RECEIVER, SIGNUP_MSATS_PRICE } from '~/lib/envs';
 import { federationConfig } from '~/lib/federation';
 import { initializeNDK, signNdkEvent } from '~/lib/utils';
+import { hexToBytes } from 'nostr-tools/utils';
+import { buildBuyHandleRequest, buildZapRequestEvent } from '~/lib/events';
 
 export const revalidate = 0;
 
@@ -23,7 +24,7 @@ export async function GET() {
       throw new Error('NIP05 nostr pubkey not found');
     }
 
-    const adminPubkey: string = getPublicKey(ADMIN_PRIVATE_KEY);
+    const adminPubkey: string = getPublicKey(hexToBytes(ADMIN_PRIVATE_KEY));
     const randomNonce: string = randomBytes(32).toString('hex');
     const encryptedNonce: string = await nip04.encrypt(ADMIN_PRIVATE_KEY, adminPubkey, randomNonce);
     const ndk: NDK = await initializeNDK(federationConfig.relaysList, new NDKPrivateKeySigner(ADMIN_PRIVATE_KEY));
@@ -39,9 +40,13 @@ export async function GET() {
     /* Zap Request Event */
     const zapRequestEvent: NostrEvent | undefined = await signNdkEvent(
       ndk,
-      buildZapRequestEvent(adminPubkey, lnAddressReceiver.nostrPubkey, SIGNUP_MSATS_PRICE, federationConfig, [
-        ['e', buyReqEvent.id!],
-      ]),
+      buildZapRequestEvent(
+        adminPubkey,
+        lnAddressReceiver.nostrPubkey,
+        SIGNUP_MSATS_PRICE,
+        federationConfig.relaysList,
+        [['e', buyReqEvent.id!]],
+      ),
     );
 
     const zapParams: { amount: string; nostr: string } = {

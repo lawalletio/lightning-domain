@@ -1,4 +1,1 @@
-import { createConfig } from '@lawallet/utils';
-import fedConfig from '~/constants/federationConfig.json';
-
-export const federationConfig = createConfig(fedConfig);
+export { default as federationConfig } from '~/constants/federationConfig.json';
